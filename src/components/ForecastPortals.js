@@ -92,7 +92,7 @@ const ForecastPortal = ({
           <Text
             position={[-0.8, 1.0, 0.1]}
             fontSize={0.18}
-            color="#FFFF00"
+            color="#000000"
             anchorX="left"
             anchorY="middle"
           >
@@ -102,7 +102,7 @@ const ForecastPortal = ({
           <Text
             position={[0.8, 1.0, 0.1]}
             fontSize={0.15}
-            color="#FFFF00"
+            color="#000000"
             anchorX="right"
             anchorY="middle"
           >
@@ -112,7 +112,7 @@ const ForecastPortal = ({
           <Text
             position={[-0.8, -1.0, 0.1]}
             fontSize={0.11}
-            color="#FFFF00"
+            color="#000000"
             anchorX="left"
             anchorY="middle"
             maxWidth={1.6}
