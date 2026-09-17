@@ -17,7 +17,7 @@ export const wrapEffect = (effectImpl, defaultBlendMode = BlendFunction.NORMAL) 
       effect.blendMode.blendFunction = !blendFunction && blendFunction !== 0 ? defaultBlendMode : blendFunction
       if (opacity !== undefined) effect.blendMode.opacity.value = opacity
       invalidate()
-    }, [blendFunction, effect.blendMode, opacity])
+    }, [blendFunction, effect.blendMode, opacity, invalidate])
     return React.createElement('primitive', { ref, object: effect, dispose: null })
   })
 

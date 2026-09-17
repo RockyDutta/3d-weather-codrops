@@ -1,5 +1,5 @@
 import React from 'react';
-import { getWeatherConditionType, shouldShowSun, isPartlyCloudy } from '../services/weatherService';
+import { getWeatherConditionType, isPartlyCloudy } from '../services/weatherService';
 import Sun from './weather3d/Sun';
 import Moon from './weather3d/Moon';
 import Clouds from './weather3d/Clouds';

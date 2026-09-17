@@ -125,12 +125,12 @@ const Scene3D = ({ weatherData, isLoading, onPortalModeChange, onSetExitPortalFu
   const [portalWeatherData, setPortalWeatherData] = React.useState(null);
   
 
-  const exitPortal = () => {
+  const exitPortal = React.useCallback(() => {
     setPortalMode(false);
     setPortalWeatherData(null);
     onPortalModeChange?.(false);
     onPortalWeatherDataChange?.(null);
-  };
+  }, [onPortalModeChange, onPortalWeatherDataChange]);
 
   const handlePortalStateChange = (isPortalActive, dayData) => {
     setPortalMode(isPortalActive);
@@ -164,7 +164,7 @@ const Scene3D = ({ weatherData, isLoading, onPortalModeChange, onSetExitPortalFu
   // Provide exit function to parent
   React.useEffect(() => {
     onSetExitPortalFunction?.(() => exitPortal);
-  }, [onSetExitPortalFunction]);
+  }, [onSetExitPortalFunction, exitPortal]);
   
   const getTimeOfDay = () => {
     if (!weatherData?.location?.localtime) return 'day';
@@ -204,7 +204,7 @@ const Scene3D = ({ weatherData, isLoading, onPortalModeChange, onSetExitPortalFu
       }
     }
 
-    const { lat, lon, localtime } = weatherData.location;
+    const { localtime } = weatherData.location;
     const date = new Date(localtime);
     const hour = date.getHours() + date.getMinutes() / 60;
     
@@ -225,7 +225,7 @@ const Scene3D = ({ weatherData, isLoading, onPortalModeChange, onSetExitPortalFu
       // Nighttime - moon position
       return [0, -30, 50];
     }
-  }, [weatherData?.location?.lat, weatherData?.location?.lon, weatherData?.location?.localtime]);
+  }, [weatherData?.location]);
 
   const isNight = isNightTime();
   const timeOfDay = getTimeOfDay();

@@ -232,7 +232,8 @@ function UltimateLensFlare({
       enabled,
       opacity,
       viewport.width,
-      viewport.height
+      viewport.height,
+      lensDirtTexture
     ]
   )
 }
