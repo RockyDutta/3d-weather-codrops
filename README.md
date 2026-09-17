@@ -1,7 +1,7 @@
 # Weather 3D Visualization
 
 ## What you'll build
-An immersive 3D weather visualization that transforms real-time meteorological data into interactive atmospheric environments. Features particle systems for rain and snow, dynamic lighting with lens flares, realistic clouds, and forecast portals that let you step into tomorrow's weather conditions.
+An immersive 3D weather visualization that transforms real-time meteorological data into interactive atmospheric environments. Features particle systems for rain and snow, dynamic lighting with lens flares, realistic clouds, and forecast portals that let us step into tomorrow's weather conditions.
 
 ![Weather 3D Screenshot](https://i.imgur.com/3cq2OLc.png)
 
@@ -9,7 +9,7 @@ An immersive 3D weather visualization that transforms real-time meteorological d
 [Read the tutorial](https://tympanus.net/codrops/2025/09/18/creating-an-immersive-3d-weather-visualization-with-react-three-fiber/)
 
 
-[View the demo](https://3d-weather-codrops.vercel.app/)
+[View the demo](https://3d-weather-codrops-blond.vercel.app/)
 
 ## Installing:
 ```bash

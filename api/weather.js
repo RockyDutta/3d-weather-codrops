@@ -220,7 +220,7 @@ export default async function handler(req, res) {
     });
   }
   
-  // Make API call to WeatherAPI
+  // Make API call to OpenWeatherMap
   const API_KEY = process.env.REACT_APP_WEATHER_API_KEY || process.env.WEATHER_API_KEY;
   
   if (!API_KEY) {
@@ -229,19 +229,114 @@ export default async function handler(req, res) {
   }
   
   try {
-    const weatherResponse = await fetch(
-      `https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${encodeURIComponent(location)}&days=3&aqi=no&alerts=no&tz=${Intl.DateTimeFormat().resolvedOptions().timeZone}`
-    );
+    const encodedLocation = encodeURIComponent(location);
+    const [currentResponse, forecastResponse] = await Promise.all([
+      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodedLocation}&appid=${API_KEY}&units=metric`),
+      fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodedLocation}&appid=${API_KEY}&units=metric`)
+    ]);
     
-    if (!weatherResponse.ok) {
-      const errorData = await weatherResponse.json().catch(() => ({}));
-      return res.status(weatherResponse.status).json({ 
-        error: errorData.error?.message || 'Weather API error',
-        code: errorData.error?.code
+    if (!currentResponse.ok || !forecastResponse.ok) {
+      const errorData = await currentResponse.json().catch(() => ({}));
+      return res.status(currentResponse.status).json({ 
+        error: errorData.message || 'Weather API error',
+        code: errorData.cod
       });
     }
     
-    const weatherData = await weatherResponse.json();
+    const currentData = await currentResponse.json();
+    const forecastData = await forecastResponse.json();
+
+    // Map OpenWeatherMap data to the WeatherAPI format expected by the frontend
+    const dailyForecasts = {};
+    forecastData.list.forEach(item => {
+      const date = item.dt_txt.split(' ')[0];
+      if (!dailyForecasts[date]) {
+        dailyForecasts[date] = {
+          date: date,
+          date_epoch: new Date(date).getTime() / 1000,
+          temps: [],
+          winds: [],
+          precip: [],
+          humidity: [],
+          conditions: [],
+        };
+      }
+      dailyForecasts[date].temps.push(item.main.temp);
+      dailyForecasts[date].winds.push(item.wind.speed * 3.6);
+      dailyForecasts[date].precip.push(item.pop * 100);
+      dailyForecasts[date].humidity.push(item.main.humidity);
+      dailyForecasts[date].conditions.push(item.weather[0]);
+    });
+
+    const forecastday = Object.values(dailyForecasts).slice(0, 3).map(day => {
+      const maxTemp = Math.max(...day.temps);
+      const minTemp = Math.min(...day.temps);
+      const avgTemp = day.temps.reduce((a, b) => a + b, 0) / day.temps.length;
+      const maxWind = Math.max(...day.winds);
+      const avgHumidity = day.humidity.reduce((a, b) => a + b, 0) / day.humidity.length;
+      const chanceOfRain = Math.max(...day.precip);
+      
+      const conditionCounts = {};
+      let mainCondition = day.conditions[0];
+      let maxCount = 0;
+      day.conditions.forEach(cond => {
+        conditionCounts[cond.id] = (conditionCounts[cond.id] || 0) + 1;
+        if (conditionCounts[cond.id] > maxCount) {
+          maxCount = conditionCounts[cond.id];
+          mainCondition = cond;
+        }
+      });
+  
+      return {
+        date: day.date,
+        date_epoch: day.date_epoch,
+        day: {
+          maxtemp_c: maxTemp,
+          maxtemp_f: (maxTemp * 9/5) + 32,
+          mintemp_c: minTemp,
+          mintemp_f: (minTemp * 9/5) + 32,
+          avgtemp_c: avgTemp,
+          avgtemp_f: (avgTemp * 9/5) + 32,
+          maxwind_kph: maxWind,
+          maxwind_mph: maxWind / 1.609,
+          avghumidity: avgHumidity,
+          daily_chance_of_rain: chanceOfRain,
+          daily_will_it_rain: chanceOfRain > 50 ? 1 : 0,
+          condition: {
+            text: mainCondition.description,
+            code: mainCondition.id
+          }
+        }
+      };
+    });
+
+    const weatherData = {
+      location: {
+        name: currentData.name,
+        country: currentData.sys.country,
+        lat: currentData.coord.lat,
+        lon: currentData.coord.lon,
+        localtime_epoch: currentData.dt,
+        localtime: new Date(currentData.dt * 1000).toISOString()
+      },
+      current: {
+        temp_c: currentData.main.temp,
+        temp_f: (currentData.main.temp * 9/5) + 32,
+        is_day: (currentData.dt > currentData.sys.sunrise && currentData.dt < currentData.sys.sunset) ? 1 : 0,
+        condition: {
+          text: currentData.weather[0].description,
+          code: currentData.weather[0].id
+        },
+        wind_kph: currentData.wind.speed * 3.6,
+        wind_mph: (currentData.wind.speed * 3.6) / 1.609,
+        humidity: currentData.main.humidity,
+        feelslike_c: currentData.main.feels_like,
+        feelslike_f: (currentData.main.feels_like * 9/5) + 32,
+      },
+      forecast: {
+        forecastday: forecastday
+      }
+    };
     
     // Cache the response
     cache.set(cacheKey, {
