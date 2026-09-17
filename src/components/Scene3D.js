@@ -249,28 +249,6 @@ const Scene3D = ({ weatherData, isLoading, onPortalModeChange, onSetExitPortalFu
     return '#0D7FDB';
   };
 
-  // Component to handle mobile responsive text inside Canvas
-  const ResponsiveText = ({ isNight, isLoading }) => {
-    const { viewport } = useThree();
-    const isMobile = viewport.width < 6;
-    const textScale = isMobile ? 0.7 : 1;
-    const textPosition = [0, -0.8, 0];
-    
-    if (isLoading) return null;
-    
-    return (
-      <Text
-        position={textPosition}
-        fontSize={0.2 * textScale}
-        color="#FFFF00"
-        anchorX="center"
-        anchorY="middle"
-        letterSpacing={0.7}
-      >
-        THREE DAY FORECAST
-      </Text>
-    );
-  };
 
   return (
     <div style={{ width: '100%', height: '100vh', position: 'relative' }}>
@@ -359,8 +337,6 @@ const Scene3D = ({ weatherData, isLoading, onPortalModeChange, onSetExitPortalFu
                 isLoading={isLoading}
               />
               
-              {/* Three Day Forecast 3D Label - responsive for mobile */}
-              <ResponsiveText isNight={isNight} isLoading={isLoading} />
 
               {/* 3D Forecast Portals */}
               <ForecastPortals 

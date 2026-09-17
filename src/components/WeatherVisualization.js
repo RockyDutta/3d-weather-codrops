@@ -6,6 +6,7 @@ import Clouds from './weather3d/Clouds';
 import Rain from './weather3d/Rain';
 import Snow from './weather3d/Snow';
 import Storm from './weather3d/Storm';
+
 import { Text } from '@react-three/drei';
 
 const WeatherVisualization = ({ weatherData, isLoading, portalMode = false }) => {
@@ -92,9 +93,10 @@ const WeatherVisualization = ({ weatherData, isLoading, portalMode = false }) =>
       
       {!portalMode && (
         <Text
-          position={[0, 3.5, 0]}
-          fontSize={0.5}
-          color={isNight ? "#FFFFFF" : "#333333"}
+          position={[0, 2.3, 0]}
+          fontSize={0.4}
+          color="#000000"
+          fontWeight="bold"
           anchorX="center"
           anchorY="middle"
         >
