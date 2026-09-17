@@ -4,7 +4,7 @@ import { OrbitControls, Sky, Stars, Text } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import UltimateLensFlare from './lensflare/LensFlare';
 import ForecastPortals from './ForecastPortals';
-import { getWeatherConditionType, shouldShowSun } from '../services/weatherService';
+import { shouldShowSun } from '../services/weatherService';
 import * as THREE from 'three';
 import WeatherVisualization from './WeatherVisualization';
 

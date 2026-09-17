@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
-import { useFrame, useThree, useLoader, extend } from '@react-three/fiber';
-import { MeshPortalMaterial, Text, OrbitControls, Environment } from '@react-three/drei';
+import { useFrame, useThree, extend } from '@react-three/fiber';
+import { MeshPortalMaterial, Text, Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import WeatherVisualization from './WeatherVisualization';
 import * as geometry from "maath/geometry";
@@ -19,7 +19,6 @@ const ForecastPortal = ({
 }) => {
   const portalRef = useRef();
   const materialRef = useRef();
-  const [hovered, setHovered] = useState(false);
 
   useFrame((state, delta) => {
     if (materialRef.current) {
@@ -131,7 +130,7 @@ const ForecastPortal = ({
 const ForecastPortals = ({ weatherData, isLoading, onPortalStateChange }) => {
   const [activePortal, setActivePortal] = useState(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const { camera, gl, viewport } = useThree();
+  const { camera, viewport } = useThree();
   const cameraTargetRef = useRef({ x: 0, y: 1, z: 8 });
 
   //Mobile-responsive scaling
