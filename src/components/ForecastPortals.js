@@ -93,6 +93,7 @@ const ForecastPortal = ({
             position={[-0.8, 1.0, 0.1]}
             fontSize={0.18}
             color="#000000"
+            fontWeight="bold"
             anchorX="left"
             anchorY="middle"
           >
@@ -103,6 +104,7 @@ const ForecastPortal = ({
             position={[0.8, 1.0, 0.1]}
             fontSize={0.15}
             color="#000000"
+            fontWeight="bold"
             anchorX="right"
             anchorY="middle"
           >
@@ -113,6 +115,7 @@ const ForecastPortal = ({
             position={[-0.8, -1.0, 0.1]}
             fontSize={0.11}
             color="#000000"
+            fontWeight="bold"
             anchorX="left"
             anchorY="middle"
             maxWidth={1.6}
@@ -211,6 +214,18 @@ const ForecastPortals = ({ weatherData, isLoading, onPortalStateChange }) => {
             onExit={handleExitPortal}
           />
         ))}
+        {!isFullscreen && (
+          <Text
+            position={[0, -1.8, 0]}
+            fontSize={0.25}
+            color="#000000"
+            fontWeight="bold"
+            anchorX="center"
+            anchorY="middle"
+          >
+            THREE UPCOMING DAYS FORECAST
+          </Text>
+        )}
       </group>
       
     </>
