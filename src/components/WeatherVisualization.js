@@ -86,8 +86,8 @@ const WeatherVisualization = ({ weatherData, isLoading, portalMode = false }) =>
 
   return (
     <group 
-      scale={portalMode ? 0.4 : 1} 
-      position={portalMode ? [0, -1.8, 0] : [0, 0, 0]}
+      scale={portalMode ? 0.25 : 1} 
+      position={portalMode ? [0, -0.2, 0] : [0, 0, 0]}
     >
       {renderWeatherEffect()}
       

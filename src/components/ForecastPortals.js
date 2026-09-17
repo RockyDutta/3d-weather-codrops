@@ -14,6 +14,7 @@ const ForecastPortal = ({
   index, 
   isActive,
   isFullscreen,
+  isNight,
   onEnter, 
   onExit 
 }) => {
@@ -44,27 +45,40 @@ const ForecastPortal = ({
     current: {
       temp_f: dayData.day.maxtemp_f,
       condition: dayData.day.condition,
-      is_day: 1, // Assume daytime for forecast
+      is_day: isNight ? 0 : 1, // Match location's day/night
       humidity: dayData.day.avghumidity,
       wind_mph: dayData.day.maxwind_mph,
     },
     location: {
-      localtime: dayData.date + 'T12:00' // Noon time for forecast
+      localtime: dayData.date + (isNight ? 'T22:00' : 'T12:00') // Match location's time
     }
-  }), [dayData]);
+  }), [dayData, isNight]);
+
+  const getPortalBackgroundColor = (conditionText) => {
+    if (isNight) return '#0A1428';
+    const condition = conditionText.toLowerCase();
+    if (condition.includes('storm')) return '#263238';
+    if (condition.includes('rain') || condition.includes('overcast')) return '#546E7A';
+    if (condition.includes('cloudy')) return '#1E88E5';
+    return '#87CEEB';
+  };
+
+  const isDarkBackground = isNight || 
+    ['storm', 'rain', 'overcast', 'cloudy'].some(c => dayData.day.condition.text.toLowerCase().includes(c));
+  const textColor = isDarkBackground ? '#FFFFFF' : '#000000';
 
   // Portal content with proper scene structure
   const PortalScene = () => (
     <>
-      <color attach="background" args={['#87CEEB']} />
-      <ambientLight intensity={0.4} />
-      <directionalLight position={[10, 10, 5]} intensity={1} />
+      <color attach="background" args={[getPortalBackgroundColor(dayData.day.condition.text)]} />
+      <ambientLight intensity={isNight ? 0.2 : 0.4} />
+      <directionalLight position={[10, 10, 5]} intensity={isNight ? 0.5 : 1} color={isNight ? "#4169E1" : "#FFFFFF"} />
       <WeatherVisualization 
         weatherData={portalWeatherData} 
         isLoading={false}
         portalMode={true}
       />
-      <Environment preset="city" />
+      <Environment preset={isNight ? "night" : "city"} />
     </>
   );
 
@@ -92,7 +106,7 @@ const ForecastPortal = ({
           <Text
             position={[-0.8, 1.0, 0.1]}
             fontSize={0.18}
-            color="#000000"
+            color={textColor}
             fontWeight="bold"
             anchorX="left"
             anchorY="middle"
@@ -103,7 +117,7 @@ const ForecastPortal = ({
           <Text
             position={[0.8, 1.0, 0.1]}
             fontSize={0.15}
-            color="#000000"
+            color={textColor}
             fontWeight="bold"
             anchorX="right"
             anchorY="middle"
@@ -114,7 +128,7 @@ const ForecastPortal = ({
           <Text
             position={[-0.8, -1.0, 0.1]}
             fontSize={0.11}
-            color="#000000"
+            color={textColor}
             fontWeight="bold"
             anchorX="left"
             anchorY="middle"
@@ -136,11 +150,19 @@ const ForecastPortals = ({ weatherData, isLoading, onPortalStateChange }) => {
   const { camera, viewport } = useThree();
   const cameraTargetRef = useRef({ x: 0, y: 1, z: 8 });
 
+  const isNightTime = () => {
+    if (!weatherData?.location?.localtime) return false;
+    const localTime = weatherData.location.localtime;
+    const currentHour = new Date(localTime).getHours();
+    return currentHour >= 19 || currentHour <= 6;
+  };
+  const isNight = isNightTime();
+
   //Mobile-responsive scaling
   const isMobile = viewport.width < 6;
   const scale = isMobile ? 0.7 : 1;
   const spacing = isMobile ? 2.2 : 3;
-  const mobileYPosition = 1.0; // Centered on page
+  const mobileYPosition = 0.0; // Moved down to avoid overlapping main text
 
   // Smooth camera animation when transitioning to portal mode
   useFrame((state, delta) => {
@@ -210,6 +232,7 @@ const ForecastPortals = ({ weatherData, isLoading, onPortalStateChange }) => {
             index={index}
             isActive={activePortal === index}
             isFullscreen={isFullscreen}
+            isNight={isNight}
             onEnter={() => handleEnterPortal(index)}
             onExit={handleExitPortal}
           />
@@ -218,7 +241,7 @@ const ForecastPortals = ({ weatherData, isLoading, onPortalStateChange }) => {
           <Text
             position={[0, -1.8, 0]}
             fontSize={0.25}
-            color="#000000"
+            color="#FFFFFF"
             fontWeight="bold"
             anchorX="center"
             anchorY="middle"
