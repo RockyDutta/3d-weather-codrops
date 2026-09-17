@@ -1,6 +1,6 @@
 import React, { Suspense, useMemo, useEffect } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
-import { OrbitControls, Sky, Stars, Text } from '@react-three/drei';
+import { OrbitControls, Sky, Stars } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import UltimateLensFlare from './lensflare/LensFlare';
 import ForecastPortals from './ForecastPortals';
