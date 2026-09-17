@@ -23,13 +23,23 @@ function App() {
     setError(null);
     
     try {
+      // Try to get the user's actual location first
       const location = await weatherService.getCurrentLocation();
       const data = await weatherService.getCurrentWeather(location);
       setWeatherData(data);
       setCurrentLocationName(`${data.location.name}, ${data.location.region}`);
     } catch (error) {
-      console.error('Error loading weather:', error);
-      setError('Unable to load weather data. Please try entering a city manually.');
+      console.log('Geolocation failed or was denied, falling back to default city:', error);
+      // Fallback to a default city if geolocation is denied or fails
+      try {
+        const defaultCity = 'Mumbai'; // You can change this default
+        const data = await weatherService.getCurrentWeather(defaultCity);
+        setWeatherData(data);
+        setCurrentLocationName(`${data.location.name}, ${data.location.region}`);
+      } catch (fallbackError) {
+        console.error('Error loading fallback weather:', fallbackError);
+        setError('Unable to load weather data. Please try entering a city manually.');
+      }
     } finally {
       setIsLoading(false);
     }
