@@ -229,10 +229,18 @@ export default async function handler(req, res) {
   }
   
   try {
-    const encodedLocation = encodeURIComponent(location);
+    let queryParam = '';
+    // Check if location is coordinates (e.g. "40.7128,-74.0060")
+    if (location.includes(',') && !isNaN(parseFloat(location.split(',')[0]))) {
+      const [lat, lon] = location.split(',').map(s => s.trim());
+      queryParam = `lat=${lat}&lon=${lon}`;
+    } else {
+      queryParam = `q=${encodeURIComponent(location)}`;
+    }
+
     const [currentResponse, forecastResponse] = await Promise.all([
-      fetch(`https://api.openweathermap.org/data/2.5/weather?q=${encodedLocation}&appid=${API_KEY}&units=metric`),
-      fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${encodedLocation}&appid=${API_KEY}&units=metric`)
+      fetch(`https://api.openweathermap.org/data/2.5/weather?${queryParam}&appid=${API_KEY}&units=metric`),
+      fetch(`https://api.openweathermap.org/data/2.5/forecast?${queryParam}&appid=${API_KEY}&units=metric`)
     ]);
     
     if (!currentResponse.ok || !forecastResponse.ok) {

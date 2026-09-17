@@ -176,11 +176,19 @@ export const weatherService = {
       } else {
         // Direct API call for local development using OpenWeatherMap
         console.log('Using direct API call for local development (OpenWeatherMap)');
-        const encodedLocation = encodeURIComponent(location);
+        
+        let queryParam = '';
+        // Check if location is coordinates (e.g. "40.7128,-74.0060")
+        if (location.includes(',') && !isNaN(parseFloat(location.split(',')[0]))) {
+          const [lat, lon] = location.split(',').map(s => s.trim());
+          queryParam = `lat=${lat}&lon=${lon}`;
+        } else {
+          queryParam = `q=${encodeURIComponent(location)}`;
+        }
         
         const [currentResponse, forecastResponse] = await Promise.all([
-          axios.get(`https://api.openweathermap.org/data/2.5/weather?q=${encodedLocation}&appid=${API_KEY}&units=metric`),
-          axios.get(`https://api.openweathermap.org/data/2.5/forecast?q=${encodedLocation}&appid=${API_KEY}&units=metric`)
+          axios.get(`https://api.openweathermap.org/data/2.5/weather?${queryParam}&appid=${API_KEY}&units=metric`),
+          axios.get(`https://api.openweathermap.org/data/2.5/forecast?${queryParam}&appid=${API_KEY}&units=metric`)
         ]);
         
         const currentData = currentResponse.data;
