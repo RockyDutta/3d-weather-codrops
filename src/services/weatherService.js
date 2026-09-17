@@ -303,6 +303,12 @@ export const weatherService = {
         throw new Error('Location not found. Please check your spelling and try again.');
       }
       
+      // Handle unauthorized errors (e.g., new API key not yet active)
+      if (error.response?.status === 401) {
+        console.log('API key is unauthorized or inactive. Using demo data.');
+        return getDemoWeatherData(location);
+      }
+      
       // Handle Vercel service unavailability (500+ errors or network failures)
       if (!error.response || error.response?.status >= 500 || error.code === 'NETWORK_ERROR') {
         console.log('Vercel service unavailable, using demo data');
